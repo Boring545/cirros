@@ -9,14 +9,14 @@ DEPS=(
     bc
     bison
     build-essential
-    grub-common
+    grub2
     git
     dosfstools
     flex
     gdisk
     gettext
     kpartx
-    libncurses5-dev
+    ncurses-devel
     mtools
     parallel
     python3
@@ -59,15 +59,10 @@ yum_install() {
     yum_get install "$@"
 }
 
-dist_id=$(cat /etc/os-release | grep '^ID=' | cut -d'=' -f2) || fail "failed: unable to determine OS ID"
-case "$dist_id" in
-    *openEuler*) :;;
-    *) fail "do not know how to set up $dist_id";;
-esac
-
-ver=$(cat /etc/os-release | grep '^VERSION_ID=' | cut -d'=' -f2 | tr -d '"')
-[[ "$ver" < "20.03" ]] &&
-    fail "building not supported prior to 20.03"
+dist_id=$(grep -oP '^ID=\K.*' /etc/os-release | tr -d '"')
+if [[ "$dist_id" != "openEuler" ]]; then
+    fail "do not know how to set up $dist_id"
+fi
 
 me=$(readlink -f "$0")
 myd=$(dirname "$me")
@@ -81,12 +76,10 @@ fi
 yum_install "${DEPS[@]}"
 
 if [ -z "$CIRROS_D" ]; then
-    error "getting $CIRROS_BRANCH to $PWD/cirros"
-    git clone "$CIRROS_BRANCH" cirros ||
-        fail "failed clone $CIRROS_BRANCH"
+    git clone "$CIRROS_BRANCH" cirros || fail "failed clone $CIRROS_BRANCH"
     CIRROS_D="$PWD/cirros"
 fi
 
-error "set up functional to $CIRROS_D"
+echo "set up functional to $CIRROS_D"
 
 # vi: tabstop=4 expandtab
