@@ -19,7 +19,7 @@ source "${0%/*}/common-functions.sh"
 
 burl="https://launchpad.net/ubuntu/+archive/primary/+files/"
 outdir="./download"
-def_arches="i386 x86_64 arm powerpc ppc64 ppc64le aarch64"
+def_arches="i386 x86_64 arm powerpc ppc64 ppc64le aarch64 riscv64"
 
 case "$1" in
     --outdir=*) outdir="${1#*=}"; shift;;
@@ -86,7 +86,7 @@ fmt_4_4_new() {
     case "$xarch" in
         amd64|i386|ppc64el|s390x)
             extras="linux-modules linux-modules-extra";;
-        arm64|armhf|powerpc)
+        arm64|armhf|powerpc|riscv64)
             extras="linux-modules";;
     esac
     [ "$xarch" = "amd64" ] &&
@@ -104,7 +104,7 @@ fmt_4_15() {
     case "$xarch" in
         # no big endian kernel or 4.15
         amd64|ppc64el) image="linux-image-unsigned";;
-        arm64|i386|s390x) :;;
+        arm64|i386|s390x|riscv64) :;;
         powerpc) image=""; extras="";;
         armhf) extras="linux-modules";;
     esac
@@ -140,6 +140,7 @@ for arch in "$@"; do
             powerpc|ppc64) xarch=powerpc; flav="powerpc64-smp";;
             ppc64le) xarch="ppc64el"; flav="generic";;
             x86_64|i386|arm64) flav="generic";;
+            riscv64) xarch="riscv64"; flav="generic";;
             *) fail "unknown kernel:arch for $kver:$arch"
         esac
     fi

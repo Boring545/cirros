@@ -27,6 +27,7 @@ env:
   - ARCHES=powerpc
   - ARCHES=ppc64
   - ARCHES=ppc64le
+  - ARCHES=riscv64
 
 script:
   # we want to test does image boots after build
